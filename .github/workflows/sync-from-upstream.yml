@@ -29,9 +29,9 @@ jobs:
         git clone https://github.com/decentraland/documentation.git
         cd documentation
         git subtree split --prefix=content/creator/sdk7 -b sdk7-only
-
+  
     - name: Push subtree to this repo
       run: |
         cd documentation
-        git remote add target https://github.com/${{ github.repository }}.git
+        git remote add target https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         git push target sdk7-only:main --force
