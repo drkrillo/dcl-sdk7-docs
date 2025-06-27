@@ -1,0 +1,37 @@
+name: Sync SDK7 from Decentraland Docs
+
+on:
+  workflow_dispatch: 
+  schedule:
+    - cron: "0 4 * * 1" 
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout this repo (dcl-sdk7-docs)
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Clone original Decentraland docs repo
+      run: |
+        git clone https://github.com/decentraland/documentation.git
+        cd documentation
+        git subtree split --prefix=content/creator/sdk7 -b sdk7-only
+
+    - name: Push subtree to this repo
+      run: |
+        cd documentation
+        git remote add target https://github.com/${{ github.repository }}.git
+        git push target sdk7-only:main --force
